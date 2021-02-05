@@ -8,14 +8,14 @@ class odeSolver:
         # one time step towards the solution
         raise NotImplementedError
         
-    def initialize(self, U0):
-        if isinstance(U0, (int, float)):
+    def initialize(self, initialValues):
+        if isinstance(initialValues, (int, float)):
             # scalar ode
             self.numberOfEqns = 1
             U0 = float(U0)
         else:
             # system of eqns
-            U0 = np.asarray(U0)
+            initialValues = np.asarray(initialValues)
             self.numberOfEqns = U0.size
         self.U0 = U0
         

@@ -3,6 +3,10 @@ from odesolver import forwardEuler
 from sir import SIR
 
 
+# This program runs a SIR model based simulation
+# of an epidemic. It uses Euler method for approximation
+# of the solutions of the differential equations of the model.
+
 def main():
     print("Beginning of simulation")
    #beta changing after a certain number of days:
@@ -18,15 +22,16 @@ def main():
     
     # Contact rate, beta, and mean recovery rate, gamma, (in 1/days).
     beta, gamma = 0.2, 1./10 
+    # A grid of time points (in days). Here we have 161 days
+    # divided into 1000 steps for a more accurate approximation
+    timePoints = np.linspace(0, 160, 1000)
     
     # initialize the SIR model with the beginning values:
-    sir = SIR(beta, gamma, S0, I0, R0)
+    sir = SIR(beta, gamma, S0, I0, R0, timePoints)
     
     solver = forwardEuler(sir)
     solver.initialize(sir.initialValues)
         
-    # A grid of time points (in days)
-    timePoints = np.linspace(0, 160, 160)
     u, t = solver.solve(timePoints)
     plotter.plotSIR(u, t)
     print("End of simulation")

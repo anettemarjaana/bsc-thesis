@@ -7,36 +7,41 @@
 import numpy as np
 
 class SIR:
-    def __init__(self, beta, gamma, S0, I0, R0):
+    def __init__(self, beta, gamma, S0, I0, R0, timePoints):
         # mu, beta = parameters in the ode system
         # S0, I0, R0 = initial values of the model
         
-        # gamma and beta MUST BE FUNCTIONS of t:
-            
-        if isinstance(beta, (float, int)):
-            # if beta is number
-            self.beta = lambda t: beta
-        elif callable(beta):
-            # if beta is function
-            self.beta = beta
-            
-        if isinstance(gamma, (float, int)):
-            # if gamma is number
-            self.gamma = lambda t: gamma
-        elif callable(gamma):
-            # if gamma is function
-            self.gamma = gamma
-            
-        
+        self.beta = beta
+        self.gamma = gamma
         self.initialValues = [S0, I0, R0]
+        self.t = np.asarray(timePoints)
         
-    def __call__(self, u, t):
-        
-        S, I, R = u
-        
-        # Return SIR equations    
+    def getEquations(self, sirValues):
+        S, I, R = sirValues
+        # Return SIR equations  
         return np.asarray([
-            -self.beta(t)*S*I,
-            self.beta(t)*S*I - self.gamma*I,
+            -self.beta*S*I,
+            self.beta*S*I - self.gamma*I,
             self.gamma*I
-            ])
+            ]) 
+                   
+    def solve(self):
+        # number of time steps in the simulation:
+        noTimeSteps = self.t.size
+        
+        self.u = np.zeros((noTimeSteps, self.numberOfEqns))
+        
+        self.u[0, :] = self.U0
+        
+        # integrate the derivatives of the model
+        for i in range(n - 1):
+            self.i = i
+            self.u[i + 1] = self.step()
+            
+        return self.u[:i+2], self.t[i+2]
+    
+    def forwardEuler(odeSolver):
+        u, f, i, t = self.u, self.f, self.i, self.t
+        dt = t[i + 1] - t[i]
+        
+        return u[i, :] + dt * f(u[i, :], t[i])
