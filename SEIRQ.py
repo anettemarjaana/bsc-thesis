@@ -88,8 +88,10 @@ def plotGraphs(S, E, I, R, Q, system):
     
     # Instead of percentages let's take the numbers of individuals:
     S = N*np.asarray(S)
+    E = N*np.asarray(E)
     I = N*np.asarray(I)
     R = N*np.asarray(R)
+    Q = N*np.asarray(Q)
     
     fig = go.Figure()
     
@@ -104,6 +106,18 @@ def plotGraphs(S, E, I, R, Q, system):
             )
         ))
 
+
+    fig.add_trace(
+        go.Scatter(
+            x = listOfDays,
+            y = E,
+            name = "E",
+            mode = 'lines',
+            marker = dict(
+                color = "#FFC107"
+            ),
+            line={"width": 0.5},
+        ))
     
     fig.add_trace(
         go.Scatter(
@@ -128,13 +142,26 @@ def plotGraphs(S, E, I, R, Q, system):
         ))
     
     
+    fig.add_trace(
+        go.Scatter(
+            x = listOfDays,
+            y = Q,
+            name = "Q",
+            mode = 'lines',
+            marker = dict(
+                color = "#082F29"
+            ),
+            line={"width": 0.5},
+        ))
+    
+    
     fig.update_layout(
-        title="Tartunnan leviäminen populaatiossa",
+        title="The spread of COVID-19 (SEIRQ-model)",
         xaxis=dict(
-            title='Päivä',
+            title='Day',
             tickmode='linear'),
-        yaxis_title="Tapausten lukumäärä",
-        legend_title="Kuvaajat",
+        yaxis_title="Number of cases",
+        legend_title="Graphs",
         font=dict(
             size=12
         )
