@@ -1,5 +1,6 @@
 from dearpygui.core import *
 from dearpygui.simple import *
+import numpy as np
 from SEIQR import SEIQR
 from SEIQR import System
 
@@ -27,9 +28,10 @@ def receiveTriggerSim1(sender, data):
     configure_item("1. Compliance of quarantine (%)", enabled=False)
     configure_item("1. Enter", enabled=False)
     
+    # Rule out ln with 0:
     if (gsi == 0):
-        gsi = 0.5
-    alpha = 10/gsi # the higher value, the more strict the restrictions are
+        gsi = 1
+    alpha = -np.log(gsi)+5.6 # the higher value, the more strict the restrictions are
     delta = maskPrc/100
     eeta = quarantinePrc/100
     
@@ -44,11 +46,11 @@ def receiveTriggerSim1(sender, data):
     listOfDays = list(range(1, NODAYS+1)) # if noDays=14, range: [1, 2, ..., 13, 14]
     add_spacing(count=6, parent="Simulation plot 1")
     add_plot("Scenario 1", x_axis_name="Day", y_axis_name="Number of cases", parent="Simulation plot 1")
-    add_scatter_series("Scenario 1", "Susceptible 1", listOfDays, S, size=2)
-    add_scatter_series("Scenario 1", "Exposed 1", listOfDays, E, size=2)
-    add_scatter_series("Scenario 1", "Infected 1", listOfDays, I, size=2)
-    add_scatter_series("Scenario 1", "Quarantined 1", listOfDays, Q, size=2)
-    add_scatter_series("Scenario 1", "Recovered 1", listOfDays, R, size=2)
+    add_line_series("Scenario 1", "Susceptible 1", listOfDays, S, color=(45, 123, 228), weight=2)
+    add_line_series("Scenario 1", "Exposed 1", listOfDays, E, color=(226, 208, 40))
+    add_line_series("Scenario 1", "Infected 1", listOfDays, I, color=(201, 9, 9), weight=2)
+    add_line_series("Scenario 1", "Quarantined 1", listOfDays, Q, color=(99, 31, 190))
+    add_line_series("Scenario 1", "Recovered 1", listOfDays, R, color=(1, 252, 35), weight=2)
     
     
 def receiveTriggerSim2(sender, data):
@@ -64,7 +66,7 @@ def receiveTriggerSim2(sender, data):
       
     if (gsi == 0):
         gsi = 0.5
-    alpha = 10/gsi # the higher value, the more strict the restrictions are
+    alpha = -np.log(gsi)+5.6  # the higher value, the more strict the restrictions are
     delta = maskPrc/100
     eeta = quarantinePrc/100
     
@@ -79,11 +81,11 @@ def receiveTriggerSim2(sender, data):
     listOfDays = list(range(1, NODAYS+1)) # if noDays=14, range: [1, 2, ..., 13, 14]
     add_spacing(count=6, parent="Simulation plot 2")
     add_plot("Scenario 2", x_axis_name="Day", y_axis_name="Number of cases", parent="Simulation plot 2")
-    add_scatter_series("Scenario 2", "Susceptible 2", listOfDays, S, size=2)
-    add_scatter_series("Scenario 2", "Exposed 2", listOfDays, E, size=2)
-    add_scatter_series("Scenario 2", "Infected 2", listOfDays, I, size=2)
-    add_scatter_series("Scenario 2", "Quarantined 2", listOfDays, Q, size=2)
-    add_scatter_series("Scenario 2", "Recovered 2", listOfDays, R, size=2)
+    add_line_series("Scenario 2", "Susceptible 2", listOfDays, S, color=(45, 123, 228), weight=2)
+    add_line_series("Scenario 2", "Exposed 2", listOfDays, E, color=(226, 208, 40))
+    add_line_series("Scenario 2", "Infected 2", listOfDays, I, color=(201, 9, 9), weight=2)
+    add_line_series("Scenario 2", "Quarantined 2", listOfDays, Q, color=(99, 31, 190))
+    add_line_series("Scenario 2", "Recovered 2", listOfDays, R, color=(1, 252, 35), weight=2)
 
 
 # THIS FUNCTION RECEIVES THE KEY INFORMATION THE USER ENTERS FIRST:
@@ -115,23 +117,23 @@ def receiveInputs(sender, data):
     
     # At the moment the user enters information and clicks "Enter"
     # -> triggers the simulation in the corresponding callback function
-    with window("Simulation plot 1", width=700, height=605):
+    with window("Simulation plot 1", width=700, height=755):
         print("GUI2 is running...")
         set_window_pos("Simulation plot 1", 0, 250)
-        add_text("Parameters for scenario 1", color=(163, 102, 255))
+        add_text("Parameters for scenario 1", color=(17, 55, 190), tip="Enter values to be able to run the simulation scenario")
         
-        add_slider_int("1. Government Stringency Index", default_value=50, min_value=0, max_value=100, width=300)
+        add_slider_int("1. Government Stringency Index", default_value=50, min_value=0, max_value=100, width=300, tip="The higher the score, the more strict control measures")
         add_slider_int("1. Usage of masks (%)", default_value=50, min_value=0, max_value=100, width=300)
         add_slider_int("1. Compliance of quarantine (%)", default_value=50, min_value=0, max_value=100, width=300)
         
         add_button("1. Enter", callback=receiveTriggerSim1)
         
-    with window("Simulation plot 2", width=700, height=605):
+    with window("Simulation plot 2", width=700, height=755):
         print("GUI3 is running...")
         set_window_pos("Simulation plot 2", 710, 250)
-        add_text("Parameters for scenario 2", color=(163, 102, 255))
+        add_text("Parameters for scenario 2", color=(17, 55, 190), tip="Enter values to be able to run the simulation scenario")
         
-        add_slider_int("2. Government Stringency Index", default_value=50, min_value=0, max_value=100, width=300)
+        add_slider_int("2. Government Stringency Index", default_value=50, min_value=0, max_value=100, width=300, tip="The higher the score, the more strict control measures")
         add_slider_int("2. Usage of masks (%)", default_value=50, min_value=0, max_value=100, width=300)
         add_slider_int("2. Compliance of quarantine (%)", default_value=50, min_value=0, max_value=100, width=300)
         
@@ -139,18 +141,50 @@ def receiveInputs(sender, data):
 
 
 # MAIN WINDOW THAT IS FIRST VISIBLE TO THE USER:
-# INITIALIZATION: Setting up the main window object
+# INITIALIZATION: Setting up the main window object (show_style_editor())
 set_main_window_size(1540, 1020)
 set_global_font_scale(1.25)
-set_theme("Classic") # try Classic / Dark / Grey
+set_theme("Light")
+set_style_frame_padding(15.00, 5.00)
+set_style_item_spacing(9.00, 3.00)
+set_style_item_inner_spacing(20.00, 3.00)
+set_style_touch_extra_padding(0.00, 0.00)
+set_style_indent_spacing(8.00)
+set_style_scrollbar_size(17.00)
+set_style_grab_min_size(20.00)
+set_style_window_border_size(0.00)
+set_style_child_border_size(1.00)
+set_style_popup_border_size(1.00)
+set_style_frame_border_size(0.00)
+set_style_tab_border_size(0.00)
+set_style_window_rounding(6.00)
+set_style_child_rounding(4.00)
+set_style_frame_rounding(0.00)
+set_style_popup_rounding(3.00)
+set_style_scrollbar_rounding(2.00)
+set_style_grab_rounding(7.00)
+set_style_tab_rounding(5.00)
+set_style_window_title_align(0.50, 0.50)
+set_style_window_menu_button_position(mvDir_Left)
+set_style_color_button_position(mvDir_Right)
+set_style_button_text_align(0.50, 0.50)
+set_style_selectable_text_align(0.00, 0.00)
+set_style_display_safe_area_padding(3.00, 3.00)
+set_style_global_alpha(1.00)
+set_style_antialiased_lines(True)
+set_style_antialiased_fill(True)
+set_style_curve_tessellation_tolerance(1.25)
+set_style_circle_segment_max_error(1.60)
 set_style_window_padding(30, 30)
 
+
+# Set objects for the first window
 with window("SEIQR simulation (COVID-19)", width=700, height=240):
     print("GUI1 is running...")
     set_window_pos("SEIQR simulation (COVID-19)", 0, 0)
     
     # Intructions
-    add_text("Please enter the key information of the simulation")
+    add_text("Please enter the key information of the simulation", tip="These values will impact both of the simulation scenarios")
     add_separator()
     add_spacing(count=6)
     
@@ -164,6 +198,5 @@ with window("SEIQR simulation (COVID-19)", width=700, height=240):
     # triggering the simulation
     add_button("Enter", callback=receiveInputs)
     
-
-    
+# START graphical user interface
 start_dearpygui()

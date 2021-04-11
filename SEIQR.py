@@ -10,15 +10,7 @@ class SEIQR:
         self.i = i/N
         self.q = q/N
         self.r = r/N
-        
-    def updateValues(self, s, e, i, q, r):
-        N = s + e + i + q + r
-        self.N = N
-        self.s = s/N
-        self.e = e/N
-        self.i = i/N
-        self.q = q/N
-        self.r = r/N
+    
  
 def stepForward(SEIQR_object, system):
     # past information of the SEIQR object:
@@ -31,15 +23,20 @@ def stepForward(SEIQR_object, system):
     # create and return new SEIQR object with the new situation
     
     # Going from S to E:
-    infections = system.alpha*system.beta[0]*system.delta*(s*e+s*i) + system.beta[1]*(1-system.delta)*(s*e+s*i)
+    dS = system.alpha*(system.beta[0]*system.delta*(s*e + s*i) + system.beta[1]*(1-system.delta)*(s*e + s*i))
     # Going from E to I or E to Q:
-    symptomatic = system.theta*system.eeta*e + system.theta*(1-system.eeta)*e
+    dE = system.theta*system.eeta*e + system.theta*(1-system.eeta)*e
+    dI = system.theta*(1-system.eeta)*e - system.gamma*i
+    dQ = system.theta*system.eeta*e - system.gamma*q
+    dR = system.gamma*i + system.gamma*q
     
-    s -= infections
-    e += infections - symptomatic
-    i += system.theta*(1-system.eeta)*e - system.gamma*i
-    q += system.theta*system.eeta*e - system.gamma*q
-    r += system.gamma*i + system.gamma*q
+    s -= dS
+    if (s < 0):
+        s = 0
+    e += dS - dE
+    i += dI
+    q += dQ
+    r += dR
     
     return SEIQR(s, e, i, q, r)
     
@@ -50,8 +47,8 @@ class System:
             
         # PROBABILITY OF INFECTION
         beta = []
-        beta1 = 0.6 # 30% if the mask is in use
-        beta2 = 1 # 50% if there's no mask in use
+        beta1 = 0.30*1/4 # 30% if the exposed/infectious has a mask in use
+        beta2 = 0.90*1/4 # 90% if there's no masks in use in the contact
         self.beta = [beta1, beta2]
         
         # PROBABILITY OF AN EXPOSED INDIVIDUAL BECOMING SYMPTOMATIC
@@ -59,7 +56,7 @@ class System:
         self.theta = 1/incubationTime
         
         # PROBABILITY OF RECOVERY AFTER SYMPTOMATIC
-        recoveryTime = 10
+        recoveryTime = 8
         self.gamma = 1/recoveryTime
         
         # USER GIVEN VARIABLES:
