@@ -65,7 +65,7 @@ def receiveTriggerSim2(sender, data):
     configure_item("2. Enter", enabled=False)
       
     if (gsi == 0):
-        gsi = 0.5
+        gsi = 1
     alpha = -np.log(gsi)+5.6  # the higher value, the more strict the restrictions are
     delta = maskPrc/100
     eeta = quarantinePrc/100
